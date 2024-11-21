@@ -1,7 +1,7 @@
 from utils.map import InitMap, NewApple
 from utils.logs import PrintLog
 
-def InitGame(game_data):
+def InitNewGame(game_data):
     game_data['running'] = True
     InitMap(game_data)
     
@@ -17,8 +17,6 @@ def InitGame(game_data):
     elif y_body == y_head + 1:
         game_data['last_move'] = 'left'
     
-
-
 
 def MoveSnake(game_data, move):
     x_head, y_head = game_data['snake_head']
@@ -40,9 +38,10 @@ def MoveSnake(game_data, move):
         EatRedApple(game_data, nxt_x, nxt_y)
 
     elif game_data['map'][nxt_x][nxt_y] == 'S' or game_data['map'][nxt_x][nxt_y] == 'W':
-        GameOver()
+        GameOver(game_data)
 
     game_data['last_move'] = move
+
 
 def EatGreenApple(game_data, nxt_x, nxt_y):
     x_head, y_head = game_data['snake_head']
@@ -52,7 +51,6 @@ def EatGreenApple(game_data, nxt_x, nxt_y):
     game_data['snake_head'] = (nxt_x, nxt_y)
     game_data['snake_size'] = len(game_data['snake_body'])
     NewApple(game_data, 'G')
-
 
 
 def EatRedApple(game_data, nxt_x, nxt_y):
@@ -71,6 +69,7 @@ def EatRedApple(game_data, nxt_x, nxt_y):
     game_data['snake_size'] = len(game_data['snake_body'])
     NewApple(game_data, 'R')
 
-def GameOver():
+
+def GameOver(game_data):
     PrintLog('\n\n       GAME OVER BIACH   ')
-    exit(0)
+    exit(666)

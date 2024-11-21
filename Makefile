@@ -13,7 +13,8 @@ install:
 	@echo "$(GREEN) ===> installing dependencies..."
 	@. virtualEnv/bin/activate && pip install -r requirements.txt
 	@. virtualEnv/bin/activate && pip install -e .
-	@rm -rf core/utils.egg-info
+	@rm -rf core/HumanPlay/utils.egg-info
+#	@rm -rf core/AgentPlay/utils.egg-info
 	@echo " ===> Done.$(RESET)"
 
 clean:

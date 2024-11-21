@@ -1,9 +1,10 @@
 import pygame
+import argparse
 import time
 
 from utils.logs import PrintError, PrintLog, PrintGameData
 from utils.map import LoadMap
-from utils.game import InitGame, MoveSnake
+from utils.game import InitNewGame, MoveSnake
 
 
 width = 720
@@ -26,19 +27,17 @@ def Events(game_data):
         PrintGameData(game_data)
 
 
-
 if __name__ == '__main__':
     try: 
         pygame.init()
         screen = pygame.display.set_mode((720, 720))
-        clock = pygame.time.Clock()
-        game_data = {}
-        InitGame(game_data)
 
+        game_data = {}
+        InitNewGame(game_data)
         while game_data['running'] == True:
             Events(game_data)
             LoadMap(screen, game_data['map'], width / 12, height / 12)
-            
+        
 
     except Exception as error:
         PrintError(error) 

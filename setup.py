@@ -4,7 +4,7 @@ setup(
     name='utils',
     version='0.1',
     packages=['utils'],
-    package_dir={'': 'core'},
+    package_dir={'': 'core/HumanPlay'},
     install_requires=[
         'colorama',
         'pandas',
