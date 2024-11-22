@@ -1,9 +1,12 @@
-from utils.map import InitMap, NewApple
+import random
+import pygame
+
+from utils.tools import GenerateMap
 from utils.logs import PrintLog
 
 
 class   GameEngin():
-    def __init__(self, args)
+    def __init__(self, args):
         self.visual = True if args.no_visual == False else False
         self.width = args.width
         self.height = args.height
@@ -11,9 +14,13 @@ class   GameEngin():
         self.map = []
         self.snake_head = ()
         self.snake_body = []
+        self.snake_size = 2
+        self.last_move = None
+        self.n_cells = args.n_cells
+        self.speed = args.speed
+
         self.InitMap()
-        self.snake_size = len(self.snake_body)
-    
+
         x_head, y_head = self.snake_head
         x_body, y_body = self.snake_body[0]
         if x_body == x_head - 1:
@@ -27,34 +34,47 @@ class   GameEngin():
 
         if self.visual == True:
             pygame.init()
-            self.window = pygame.display.set_mode((720. 720))
-        
+            self.window = pygame.display.set_mode((self.width, self.height))
+            self.UpdateWindow()
+
+    def ResetEngin(self):
+        self.game_state = 'running'
+        self.map = []
+        self.snake_head = ()
+        self.snake_body = []
+        self.snake_size = 2
+        self.last_move = None
+
+        self.InitMap()
+
+        x_head, y_head = self.snake_head
+        x_body, y_body = self.snake_body[0]
+        if x_body == x_head - 1:
+            self.last_move = 'down'
+        elif x_body == x_head + 1:
+            self.last_move = 'up'
+        elif y_body == y_head - 1:
+            self.last_move = 'right'
+        elif y_body == y_head + 1:
+            self.last_move = 'left'
+
+        if self.visual == True:
+            self.UpdateWindow()
+
 
     def InitMap(self):
-        self.map = [
-            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
-            ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-            ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-            ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-            ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-            ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-            ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-            ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-            ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-            ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-            ['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'W'],
-            ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
-        ]
+        self.map = GenerateMap(self.n_cells)
         self.NewApple('G')
         self.NewApple('G')
         self.NewApple('R')
         self.NewSnake()
         
-    def NewApple(self, type):
+
+    def NewApple(self, apple_type):
         apple_placed = False
         while apple_placed != True:
-            x = random.randint(1, 10)
-            y = random.randint(1, 10)
+            x = random.randint(1, self.n_cells)
+            y = random.randint(1, self.n_cells)
             if self.map[x][y] == '0':
                 self.map[x][y] = apple_type
                 apple_placed = True
@@ -63,8 +83,8 @@ class   GameEngin():
     def NewSnake(self):
         snake_placed = False
         while snake_placed != True:
-            x1 = random.randint(1, 10)
-            y1 = random.randint(1, 10)
+            x1 = random.randint(1, self.n_cells)
+            y1 = random.randint(1, self.n_cells)
             if self.map[x1][y1] == '0':
                 next_pos = random.randint(1, 4)
                 if next_pos == 1:
@@ -142,7 +162,8 @@ class   GameEngin():
 
     def EatRedApple(self, nxt_x, nxt_y):
         if self.snake_size == 1:
-            GameOver()
+            self.GameOver()
+            return
         x_head, y_head = self.snake_head
         x_tail, y_tail = self.snake_body.pop()
         x_erase, y_erase = self.snake_body.pop()
