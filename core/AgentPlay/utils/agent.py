@@ -64,11 +64,11 @@ class Agent():
 
     def CalcScore(self, game_engin, move, state):#Nouvelle valeur = Ancienne valeur + learning_rate * ((Récompense immédiate + Valeur future estimée * facteur d'actualisation) - Ancienne valeur)
         instant_reward = InstantReward(game_engin, move)
-        future_reward = FutureReward(game_engin, move)
+        future_reward = FutureReward(game_engin, move, self.q_table)
         return instant_reward + future_reward * self.discount
 
     def Update(self, session):
-        if session % 100 == 0: 
+        if session % 100 == 0 and self.epsilon > 0.1: 
             self.epsilon -= 0.1
 
 

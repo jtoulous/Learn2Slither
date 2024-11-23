@@ -12,7 +12,7 @@ def Parsing():
     parser.add_argument('-play', action='store_true', default=False, help='just play the game')
     parser.add_argument('-no-visual', action='store_true', default=False, help='to hide the graphicals running')
     parser.add_argument('-no-logs', action='store_true', default=False, help='to hide the logs')
-    parser.add_argument('-sessions', type=int, default=100, help="nb training sessions")
+    parser.add_argument('-sessions', type=int, default=1000, help="nb training sessions")
     parser.add_argument('-discount', type=float, default=0.9, help='discount factor')
     parser.add_argument('-alpha', type=float, default=0.1, help='learning rate')
     parser.add_argument('-epsi', type=float, default=1, help='start epsilon')

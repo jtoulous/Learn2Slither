@@ -33,8 +33,9 @@ class   GameEngin():
             self.last_move = 'left'
 
         if self.visual == True:
+            pygame.mixer.quit()
             pygame.init()
-            self.window = pygame.display.set_mode((self.width, self.height))
+            self.window = pygame.display.set_mode((self.width, self.height), pygame.SWSURFACE)
             self.UpdateWindow()
 
     def ResetEngin(self):
