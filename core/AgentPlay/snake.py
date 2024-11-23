@@ -44,7 +44,7 @@ if __name__ == '__main__':
         game_engin = GameEngin(args)
         for session in range(args.sessions):
             RunSession(args, game_engin, agent)
-            agent.Update()
+            agent.Update(session)
             game_engin.ResetEngin()
 
 

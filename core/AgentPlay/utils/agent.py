@@ -1,5 +1,8 @@
 import random
-from utils.tools import XplorationOrXplotation, GetState, InstantReward, FutureReward
+
+from utils.policy import InstantReward, FutureReward
+from utils.tools import XplorationOrXplotation, GetState
+
 
 class Agent():
     def __init__(self, arguments=None, config=None):
@@ -39,6 +42,10 @@ class Agent():
 
         if x_type == 'Xploration':
             move = possible_moves[random.randint(0, 2)]
+            self.q_table.table[state][possible_moves[0]] = self.q_table.table[state][possible_moves[0]] + self.learning_rate * (self.CalcScore(game_engin, possible_moves[0], state) - self.q_table.table[state][possible_moves[0]])    
+            self.q_table.table[state][possible_moves[1]] = self.q_table.table[state][possible_moves[1]] + self.learning_rate * (self.CalcScore(game_engin, possible_moves[1], state) - self.q_table.table[state][possible_moves[1]])    
+            self.q_table.table[state][possible_moves[2]] = self.q_table.table[state][possible_moves[2]] + self.learning_rate * (self.CalcScore(game_engin, possible_moves[2], state) - self.q_table.table[state][possible_moves[2]])    
+
         elif x_type == 'Xplotation':
             max_score = state_scores[possible_moves[0]]
             move = possible_moves[0]
@@ -47,7 +54,7 @@ class Agent():
                 if total_score > max_score:
                     move = m
                     max_score = total_score
-        self.q_table.table[state][move] = self.CalcScore(game_engin, move, state)
+        self.q_table.table[state][move] = self.q_table.table[state][move] + self.learning_rate * (self.CalcScore(game_engin, move, state) - self.q_table.table[state][move])
         return move
 
 
@@ -55,13 +62,14 @@ class Agent():
         pass  
 
 
-    def CalcScore(self, game_engin, move, state):#Nouvelle valeur = Ancienne valeur + (Récompense immédiate + Valeur future estimée * facteur d'actualisation - Ancienne valeur)
-        instant_reward = InstantReward(game_engin.map, move, game_engin.snake_head)
-        future_reward = FutureReward(game_engin.map, self.q_table.table, move, game_engin.snake_head, game_engin.n_cells)
-        return self.q_table.table[state][move] + (instant_reward + future_reward * self.discount - self.q_table.table[state][move])
+    def CalcScore(self, game_engin, move, state):#Nouvelle valeur = Ancienne valeur + learning_rate * ((Récompense immédiate + Valeur future estimée * facteur d'actualisation) - Ancienne valeur)
+        instant_reward = InstantReward(game_engin, move)
+        future_reward = FutureReward(game_engin, move)
+        return instant_reward + future_reward * self.discount
 
-    def Update(self):
-        self.epsilon -= 0.001
+    def Update(self, session):
+        if session % 100 == 0: 
+            self.epsilon -= 0.1
 
 
 
