@@ -7,7 +7,10 @@ def InstantReward(game_engin, move):
 #        reward +=  
 
     if CloserToGreen(game_engin, move) == True:
-        reward += 5
+        reward += 20
+
+#    if DiscoverGreen(game_engin, move) == True:
+#        reward += 10
 #
 #    if SnakeBlocked(map, snake_head, snake_tail) == True:
 #        reward -= 40
@@ -40,13 +43,13 @@ def CellType(game_engin, move):
     new_y_head = y_head + 1 if move == 'right' else y_head - 1 if move == 'left' else y_head
 
     if map[new_x_head][new_y_head] == 'G':
-        return 20
+        return 60
     elif map[new_x_head][new_y_head] == 'R':
-        return -20
+        return -30
     elif map[new_x_head][new_y_head] == '0':
-        return -1
+        return -2
     elif map[new_x_head][new_y_head] == 'W' or map[new_x_head][new_y_head] == 'S':
-        return -50
+        return -100
     return 0
 
 
