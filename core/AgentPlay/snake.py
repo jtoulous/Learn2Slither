@@ -1,3 +1,4 @@
+import os
 import pygame
 import argparse
 import time
@@ -14,7 +15,7 @@ def Parsing():
     parser.add_argument('-no-logs', action='store_true', default=False, help='to hide the logs')
     parser.add_argument('-sessions', type=int, default=1000, help="nb training sessions")
     parser.add_argument('-discount', type=float, default=0.9, help='discount factor')
-    parser.add_argument('-alpha', type=float, default=0.1, help='learning rate')
+    parser.add_argument('-alpha', type=float, default=0.5, help='learning rate')
     parser.add_argument('-epsi_max', type=float, default=1, help='start epsilon')
     parser.add_argument('-epsi_min', type=float, default=0.01, help='start epsilon')
     parser.add_argument('-epsi_decay', type=str, default='linear', help='epsilon decay strategy')
@@ -43,6 +44,7 @@ def RunSession(args, game_engin, agent):
 
         if game_engin.speed != 0:
             time.sleep(game_engin.speed)
+#        forward = input('')
 
 
 if __name__ == '__main__':
@@ -58,8 +60,13 @@ if __name__ == '__main__':
                 agent.Update(session, args.sessions)
             game_engin.ResetEngin()
 
-        if args.save != None:
-            agent.SaveConfig(args.save)
+        if args.train == True:
+            if args.load == None:
+                agent.SaveConfig(args.save)
+            else:
+                os.remove(args.load)
+                agent.SaveConfig(args.load)
+
 
     except Exception as error:
         PrintError(error)
