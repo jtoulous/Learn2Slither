@@ -1,3 +1,4 @@
+import os
 import random
 import pickle
 
@@ -29,7 +30,7 @@ class Agent():
         return nxt_move
         
     def GetMove(self, game_engin, x_type, last_move, state, train):
-        state_scores = self.q_table.table[state]
+        state_scores = self.q_table.table[state] if state in self.q_table.table else None
         possible_moves = ['up', 'down', 'left', 'right']
         if last_move == 'right':
             possible_moves.remove('left')
@@ -48,19 +49,29 @@ class Agent():
             self.q_table.table[state][possible_moves[2]] = self.q_table.table[state][possible_moves[2]] + self.learning_rate * (self.CalcScore(game_engin, possible_moves[2], state) - self.q_table.table[state][possible_moves[2]])    
 
         if x_type == 'Xploration':
-            move = possible_moves[random.randint(0, 2)]
+            best_move = possible_moves[random.randint(0, 2)]
 
         elif x_type == 'Xplotation':
-            max_score = state_scores[possible_moves[0]]
-            move = possible_moves[0]
-#            if train == True:
-#                self.q_table.table[state][move] = self.q_table.table[state][move] + self.learning_rate * (self.CalcScore(game_engin, move, state) - self.q_table.table[state][move])
-            for m in possible_moves:
-                total_score = self.CalcScore(game_engin, m, state)
-                if state_scores[m] > max_score:
-                    move = m
-                    max_score = state_scores[m]
-        return move
+            if state_scores is None and train == False:
+                best_move = possible_moves[0]
+                max_score = self.CalcScore(game_engin, best_move, state)
+                for move in possible_moves:
+                    if self.CalcScore(game_engin, move, state) > max_score:
+                        best_move = move 
+                        max_score = self.CalcScore(game_engin, move, state)
+
+
+            else:
+                random_nb = random.randint(0, 2)
+                max_score = state_scores[possible_moves[random_nb]]
+                best_move = possible_moves[random_nb]
+                for m in possible_moves:
+                    if state_scores[m] > max_score:
+                        best_move = m
+                        max_score = state_scores[m]
+                if train == True:
+                    self.q_table.table[state][best_move] = self.q_table.table[state][best_move] + self.learning_rate * (self.CalcScore(game_engin, best_move, state) - self.q_table.table[state][best_move])
+        return best_move
 
     def CalcScore(self, game_engin, move, state):#Nouvelle valeur = Ancienne valeur + learning_rate * ((Récompense immédiate + Valeur future estimée * facteur d'actualisation) - Ancienne valeur)
         instant_reward = InstantReward(game_engin, move)
@@ -77,11 +88,13 @@ class Agent():
     def LoadConfig(config_file): #to do
         with open(config_file, "rb") as file:
             agent = pickle.load(file)
-            agent.epsilon = 0
+            agent.epsilon = 1
         return agent
 
 
     def SaveConfig(self, config_file):
+        if os.path.exists(config_file):
+            os.remove(config_file)
         with open(config_file, "wb") as file:
             pickle.dump(self, file)
 

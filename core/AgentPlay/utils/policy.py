@@ -25,7 +25,7 @@ def InstantReward(game_engin, move):
         reward += 50
 
     if AvoidingGreen(game_engin, move) == True:
-        reward -= 50
+        reward -= 100
 
 #    if NextToWall(game_engin, move) == True:
 #        reward -= 10
