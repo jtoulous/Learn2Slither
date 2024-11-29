@@ -27,8 +27,11 @@ def InstantReward(game_engin, move):
     if AvoidingGreen(game_engin, move) == True:
         reward -= 100
 
-#    if NextToWall(game_engin, move) == True:
-#        reward -= 10
+    if NextToWall(game_engin, move) == True:
+        reward -= 20
+#
+    if InMapCorner(game_engin, move) == True:
+        reward -= 30
 
 #    if DiscoverGreen(game_engin, move) == True:
 #        reward += 10
@@ -54,7 +57,7 @@ def CellType(game_engin, move):
     elif map[new_x_head][new_y_head] == '0':
         return -2
     elif map[new_x_head][new_y_head] == 'W' or map[new_x_head][new_y_head] == 'S':
-        return -100
+        return -1000
     return 0
 
 
@@ -108,5 +111,45 @@ def AvoidingGreen(game_engin, move):
                 return True
     return False
 
+
+def NextToWall(game_engin, move):
+    map = game_engin.map
+    x_head, y_head = game_engin.snake_head
+    new_x_head = x_head + 1 if move == 'down' else x_head - 1 if move == 'up' else x_head
+    new_y_head = y_head + 1 if move == 'right' else y_head - 1 if move == 'left' else y_head
+    if map[new_x_head][new_y_head] != 'W':
+        if (
+            map[new_x_head + 1][new_y_head] == 'W'
+            or map[new_x_head - 1][new_y_head] == 'W'
+            or map[new_x_head][new_y_head + 1] == 'W'
+            or map[new_x_head][new_y_head - 1] == 'W'
+        ):
+                return True
+    return False
+
+
+def InMapCorner(game_engin, move):
+    map = game_engin.map
+    x_head, y_head = game_engin.snake_head
+    new_x_head = x_head + 1 if move == 'down' else x_head - 1 if move == 'up' else x_head
+    new_y_head = y_head + 1 if move == 'right' else y_head - 1 if move == 'left' else y_head
+    nb_walls = 0
+
+    if map[new_x_head][new_y_head] != 'W':
+        if map[new_x_head + 1][new_y_head] == 'W':
+            nb_walls += 1
+
+        if map[new_x_head - 1][new_y_head] == 'W':
+            nb_walls += 1
+
+        if map[new_x_head][new_y_head + 1] == 'W':
+            nb_walls += 1
+
+        if map[new_x_head][new_y_head - 1] == 'W':
+            nb_walls += 1
+
+        if nb_walls == 2:
+            return True
+    return False
 
 #def SnakeBlocked(map, snake_head, snake_tail):

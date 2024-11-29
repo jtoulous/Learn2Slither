@@ -88,7 +88,7 @@ class Agent():
     def LoadConfig(config_file): #to do
         with open(config_file, "rb") as file:
             agent = pickle.load(file)
-            agent.epsilon = 1
+            agent.epsilon = 0
         return agent
 
 

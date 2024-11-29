@@ -53,7 +53,7 @@ if __name__ == '__main__':
         agent = Agent(arguments=args) if args.load is None else Agent.LoadConfig(args.load)
         game_engin = GameEngin(args)
         for session in range(args.sessions):
-            PrintLog(f'session {session + 1} / {args.sessions}  /  epsilon = {agent.epsilon}')
+            PrintLog(f'session {session + 1} / {args.sessions}  |  epsilon = {agent.epsilon}')
             RunSession(args, game_engin, agent)
             
             if args.train == True:    
@@ -64,7 +64,6 @@ if __name__ == '__main__':
             if args.load == None:
                 agent.SaveConfig(args.save)
             else:
-                os.remove(args.load)
                 agent.SaveConfig(args.load)
 
 
