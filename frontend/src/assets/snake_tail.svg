@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="gTail" x1="0" x2="1">
+      <stop offset="0" stop-color="#00aaff"/>
+      <stop offset="1" stop-color="#002244"/>
+    </linearGradient>
+    <filter id="glowTail" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="256" height="256" fill="none"/>
+
+  <!-- connector top (matches body bottom for continuity) -->
+  <path d="M128 8
+           C146 16, 210 32, 216 72
+           C220 94, 220 110, 216 128
+           L40 128
+           C36 110, 36 94, 40 72
+           C46 32, 110 16, 128 8 z"
+        fill="#003a66" opacity="0.95"/>
+
+  <!-- tapered tail -->
+  <path d="M128 128
+           C140 160, 172 200, 128 240
+           C70 200, 96 160, 128 128 z"
+        fill="url(#gTail)" filter="url(#glowTail)" opacity="0.95"/>
+
+  <!-- faint segmented lines -->
+  <g fill="none" stroke="#00cfff" stroke-opacity="0.12" stroke-width="4">
+    <path d="M118 148 Q128 160 138 148"/>
+    <path d="M110 172 Q128 186 146 172"/>
+  </g>
+
+  <!-- very faint tip highlight -->
+  <ellipse cx="128" cy="232" rx="18" ry="6" fill="#00d7ff" opacity="0.08"/>
+</svg>

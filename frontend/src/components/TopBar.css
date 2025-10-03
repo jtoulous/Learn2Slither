@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  background: #121212;
+  color: #E0E0E0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.top-bar {
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(to right, #222, #2a2a2a, #222);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1002;
+}
+
+.top-bar-logo {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.top-bar-logo img {
+  height: 48px;
+}
+
+.top-bar h1 {
+  margin: 0;
+  font-size: 45px;
+  letter-spacing: 2px;
+  color: #ff7f32;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
+}
+
+.top-bar-link {
+  color: inherit;
+  text-decoration: none;
+}

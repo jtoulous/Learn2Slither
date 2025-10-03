@@ -1,0 +1,254 @@
+.futuristic-grid-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.grid-background-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 95%;
+    height: 95%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 127, 50, 0.15) 0%,
+        rgba(255, 127, 50, 0.08) 40%,
+        transparent 80%
+    );
+    filter: blur(30px);
+    z-index: 1;
+}
+
+.snake-game-preview.futuristic {
+    display: grid;
+    gap: 1px;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.grid-cell {
+    position: relative;
+    background: rgba(20, 20, 25, 0.9);
+    border: none;
+    overflow: hidden;
+}
+
+.cell-inner {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(30, 30, 40, 0.9) 0%,
+        rgba(25, 25, 35, 0.9) 100%
+    );
+    border: 1px solid rgba(255, 127, 50, 0.15);
+}
+
+.grid-border {
+    position: absolute;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 127, 50, 0.8),
+        transparent
+    );
+    z-index: 3;
+}
+
+.grid-border-top {
+    top: 0;
+    left: 2%;
+    width: 96%;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 127, 50, 0.7),
+        rgba(255, 127, 50, 0.9),
+        rgba(255, 127, 50, 0.7),
+        transparent
+    );
+    box-shadow: 0 0 30px rgba(255, 127, 50, 0.6);
+}
+
+.grid-border-bottom {
+    bottom: 0;
+    left: 2%;
+    width: 96%;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 127, 50, 0.7),
+        rgba(255, 127, 50, 0.9),
+        rgba(255, 127, 50, 0.7),
+        transparent
+    );
+    box-shadow: 0 0 30px rgba(255, 127, 50, 0.6);
+}
+
+.grid-border-left {
+    left: 0;
+    top: 2%;
+    height: 96%;
+    width: 3px;
+    background: linear-gradient(
+        180deg,
+        transparent,
+        rgba(255, 127, 50, 0.7),
+        rgba(255, 127, 50, 0.9),
+        rgba(255, 127, 50, 0.7),
+        transparent
+    );
+    box-shadow: 0 0 30px rgba(255, 127, 50, 0.6);
+}
+
+.grid-border-right {
+    right: 0;
+    top: 2%;
+    height: 96%;
+    width: 3px;
+    background: linear-gradient(
+        180deg,
+        transparent,
+        rgba(255, 127, 50, 0.7),
+        rgba(255, 127, 50, 0.9),
+        rgba(255, 127, 50, 0.7),
+        transparent
+    );
+    box-shadow: 0 0 30px rgba(255, 127, 50, 0.6);
+}
+
+@keyframes borderPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.grid-border {
+    animation: borderPulse 4s ease-in-out infinite;
+}
+
+.grid-border-top { animation-delay: 0s; }
+.grid-border-right { animation-delay: 1s; }
+.grid-border-bottom { animation-delay: 2s; }
+.grid-border-left { animation-delay: 3s; }
+
+.grid-cell.snake_head::after {
+    content: "";
+    position: absolute;
+    inset: 15%;
+    background: radial-gradient(circle at 40% 35%, #00eaff 0%, #0044aa 85%);
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00eaff, inset 0 0 4px #0066cc;
+    animation: headPulse 1.8s infinite ease-in-out;
+    z-index: 6;
+}
+
+/* YEUX */
+.grid-cell.snake_head::before {
+    content: "";
+    position: absolute;
+    top: 38%;
+    left: 25%;
+    width: 50%;
+    height: 20%;
+    background: radial-gradient(circle, #ff0044 0%, transparent 70%) no-repeat left center,
+                radial-gradient(circle, #ff0044 0%, transparent 70%) no-repeat right center;
+    background-size: 28% 100%;
+    filter: drop-shadow(0 0 3px #ff2244);
+    z-index: 7;
+}
+
+/* CORPS */
+.grid-cell.snake_body::after {
+    content: "";
+    position: absolute;
+    inset: 20%;
+    background: radial-gradient(circle at 30% 30%, #00cfff 0%, #002244 85%);
+    border-radius: 50%;
+    box-shadow: 0 0 8px #00c8ff, inset 0 0 3px #005577;
+    animation: bodyPulse 2.2s infinite ease-in-out;
+    z-index: 5;
+}
+
+/* QUEUE */
+.grid-cell.snake_tail::after {
+    content: "";
+    position: absolute;
+    inset: 25%;
+    background: radial-gradient(circle at 40% 40%, #0088cc 0%, #001122 85%);
+    border-radius: 50%;
+    box-shadow: 0 0 4px #0088cc;
+    opacity: 0.6;
+    animation: tailPulse 2.5s infinite ease-in-out;
+    z-index: 4;
+}
+
+/* ==== Animations ==== */
+@keyframes headPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 10px #00eaff; }
+    50% { transform: scale(1.08); box-shadow: 0 0 16px #00f6ff; }
+}
+
+@keyframes bodyPulse {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
+@keyframes tailPulse {
+    0%, 100% { transform: scale(0.9); opacity: 0.5; }
+    50% { transform: scale(1); opacity: 0.7; }
+}
+
+/* ==== POMMES FUTURISTES EN OVERLAY ==== */
+.grid-cell.green_apple::after {
+    content: "";
+    position: absolute;
+    inset: 20%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #00ff99 0%, #005533 80%);
+    border: 1px solid #00ffaa;
+    box-shadow: 0 0 12px #00ffaa, 0 0 24px #00ffcc;
+    animation: applePulse 2.5s infinite ease-in-out;
+    z-index: 5;
+}
+
+.grid-cell.red_apple::after {
+    content: "";
+    position: absolute;
+    inset: 20%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ff0033 0%, #550000 80%);
+    border: 1px solid #ff3355;
+    box-shadow: 0 0 12px #ff3355, 0 0 24px #ff0033;
+    animation: applePulse 2.5s infinite ease-in-out;
+    z-index: 5;
+}
+
+/* Pulse discret */
+@keyframes applePulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+}
+
+.grid-cell:hover .cell-inner {
+    background: linear-gradient(
+        135deg,
+        rgba(45, 45, 55, 0.9) 0%,
+        rgba(40, 40, 50, 0.9) 100%
+    );
+    box-shadow: 
+        inset 0 0 15px rgba(255, 127, 50, 0.3),
+        0 0 20px rgba(255, 127, 50, 0.15);
+}
+

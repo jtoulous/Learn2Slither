@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="gBody" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#00f6ff"/>
+      <stop offset="1" stop-color="#0066ff"/>
+    </linearGradient>
+
+    <linearGradient id="gRidge" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#00eaff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#004477" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- background transparent (so overlay doesn't change case) -->
+  <rect x="0" y="0" width="256" height="256" fill="none"/>
+
+  <!-- top connector shape (matches bottom so stacking is seamless) -->
+  <path d="M128 8
+           C110 16, 46 32, 40 72
+           C36 94, 36 110, 40 128
+           L216 128
+           C220 110, 220 94, 216 72
+           C210 32, 146 16, 128 8 z"
+        fill="url(#gBody)" opacity="0.95" filter="url(#glow)"/>
+
+  <!-- central band (repeating) -->
+  <g transform="translate(0,56)">
+    <rect x="44" y="0" width="168" height="144" rx="8" fill="url(#gRidge)"/>
+    <!-- subtle inner segments to give 'scale' continuity -->
+    <g fill="none" stroke="#00bfe8" stroke-opacity="0.14" stroke-width="6">
+      <path d="M56 12 H200"/>
+      <path d="M56 36 H200"/>
+      <path d="M56 60 H200"/>
+      <path d="M56 84 H200"/>
+      <path d="M56 108 H200"/>
+    </g>
+    <!-- thin bright center spine to emphasize continuity -->
+    <rect x="124" y="0" width="8" height="144" rx="2" fill="#00f0ff" opacity="0.18"/>
+    <rect x="120" y="0" width="16" height="144" rx="2" fill="#00d8ff" opacity="0.06"/>
+  </g>
+
+  <!-- bottom connector (mirror of top for seamless tile) -->
+  <path d="M128 248
+           C146 240, 210 224, 216 184
+           C220 162, 220 146, 216 128
+           L40 128
+           C36 146, 36 162, 40 184
+           C46 224, 110 240, 128 248 z"
+        fill="url(#gBody)" opacity="0.95" filter="url(#glow)"/>
+
+</svg>

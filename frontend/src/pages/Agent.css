@@ -1,0 +1,96 @@
+.agent-page-container {
+    position: relative;
+    top: 80px; 
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.agent-top-container {
+    width: 100%;
+    height: 70px;
+    background: rgba(30, 30, 30, 0.8);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6); /* Ombre plus marquée pour la profondeur */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    color: #FFF;
+    font-size: 32px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+    margin-bottom: 0;
+    z-index: 10; /* Z-index supérieur pour "soulever" la barre */
+}
+
+.agent-top-container::after {
+    content: "⚙️";
+    position: absolute;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.agent-top-container::after:hover {
+    transform: rotate(90deg);
+}
+
+.settings-icon {
+    position: absolute;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.settings-icon:hover {
+    transform: rotate(90deg);
+}
+
+
+.tab-selection-container {
+    display: flex;
+    height: 45px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #1e1e1e;
+    border-radius: 6px 6px 0 0;
+    position: relative;
+    z-index: 9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tab-select {
+    flex: 1;
+    text-align: center;
+    padding: 13px 0;
+    color: #e0e0e0;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    margin-left: -1px; /* Coller les onglets */
+}
+
+/* Premier onglet sans marge négative */
+.tab-select:first-child {
+    margin-left: 0;
+}
+
+/* Effet de survol */
+.tab-select:hover {
+    background: #2a2a2a;
+}
+
+/* Onglet actif */
+.tab-select.active {
+    background: #2c2c2c;
+    border-bottom: 3px solid #ff9900;
+    color: #ff9900;
+}
+
+/* Icônes des onglets */
+.play-tab-select::before { content: "🚀 "; }
+.training-tab-select::before { content: "📈 "; }
+.stats-tab-select::before { content: "🔍 "; }

@@ -1,0 +1,89 @@
+.left-bar-wrapper {
+  position: fixed;
+  top: 80px; 
+  bottom: 50px;
+  left: 0;
+  width: 220px;
+  pointer-events: none;
+  z-index: 1001;
+}
+
+.left-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(6px);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.4);
+  overflow-x: hidden;
+  transition: width 0.4s ease;
+  pointer-events: all;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+}
+
+.left-bar.open {
+  width: 220px;
+}
+
+.toggle-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 0;
+  color: #ff7f32;
+  font-size: 34px;
+  cursor: pointer;
+  pointer-events: all;
+  z-index: 1002;
+  transition: color 0.3s, left 0.4s ease;
+}
+
+.toggle-arrow:hover {
+  color: #ffaa33;
+}
+
+.retract-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translate(50%, -50%);
+  right: 0;
+  color: #ff7f32;
+  font-size: 28px;
+  cursor: pointer;
+  pointer-events: all;
+  z-index: 1002;
+  transition: color 0.3s, right 0.4s ease;
+}
+
+.retract-arrow:hover {
+  color: #ffaa33;
+}
+
+
+.agent-link {
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  padding: 12px 20px;
+  text-decoration: none;
+  font-size: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.agent-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffaa33;
+}
+
+.agent-name {
+  margin-left: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
