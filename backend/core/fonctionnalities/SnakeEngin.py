@@ -4,9 +4,9 @@ import numpy as np
 
 class SnakeEngin:
     def __init__(self):
-        self.status = 'inactive'
         self.map = None
 
+        self.status = 'inactive'
         self.prev_move = None
         self.score = 0
         self.green_score = 0
@@ -15,10 +15,10 @@ class SnakeEngin:
 
     def new_game(self, n_cells=10):
         self.map = Map(n_cells)
-        self.map.reset()
+        prev_move = self.map.reset()
 
-        self.prev_move = None        
         self.status = 'active'
+        self.prev_move = prev_move
         self.score = 0
         self.green_score = 0
         self.red_score = 0
@@ -81,6 +81,7 @@ class SnakeEngin:
 
         if cell == 'W' or cell == 'S':
             self.status = 'end'
+            return
                 
         elif cell == 'G':
             self.map.move_snake(nxt_x_head, nxt_y_head)
@@ -94,6 +95,8 @@ class SnakeEngin:
 
         else:
             self.map.move_snake(nxt_x_head, nxt_y_head)
+
+        self.prev_move = move
 
 
 
@@ -134,6 +137,18 @@ class Map:
         self.new_apple('G')
         self.new_apple('G')
         self.new_apple('R')
+
+        x_head, y_head = self.snake_head
+        x_body, y_body = self.snake_body[0]
+        
+        prev_move = (
+            'up' if x_head == x_body - 1
+            else 'down' if x_head == x_body + 1
+            else 'left' if y_body == y_head + 1
+            else 'right' if y_body == y_head - 1
+            else None
+        )
+        return prev_move
 
 
 
@@ -226,10 +241,16 @@ class Map:
         self.snake_head = nxt_head
         self.snake_body.insert(0, head)
 
-        if nxt_cell == 'R':
+        if nxt_cell == 'G':
+            self.green_apples.remove(nxt_head)
+            self.new_apple('G')
+
+        elif nxt_cell == 'R':
+            self.new_apple('R')
             for i in range(2):
                 tail = self.snake_body.pop()
                 self.grid[tail] = '0'
+
         elif nxt_cell == '0':
             tail = self.snake_body.pop()
             self.grid[tail] = '0'
