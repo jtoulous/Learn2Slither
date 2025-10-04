@@ -56,18 +56,15 @@ const renderGameGrid = (currentGame) => {
     return (
         <div className="futuristic-grid-container">
             <div className="grid-background-glow"></div>
-            <div 
-                className="snake-game-preview futuristic"
-                style={{
-                    gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
-                    gridTemplateRows: `repeat(${gridSize}, 1fr)`
-                }}
-            >
-                {grid.map((cell, index) => (
-                    <div key={index} className={`grid-cell ${cell.type}`}>
-                        <div className="cell-inner"></div>
-                    </div>
-                ))}
+            <div className="snake-game-preview futuristic" style={{ gridTemplateColumns: `repeat(${gridSize}, 1fr)`, gridTemplateRows: `repeat(${gridSize}, 1fr)`}}>
+                {grid.map((cell, index) => {
+                    const isLineOfSight = cell.x === headX - 1 || cell.y === headY - 1;
+                    return (
+                        <div key={index} className={`grid-cell ${cell.type} ${isLineOfSight ? "line-of-sight" : "not-visible"}`}>
+                            <div className="cell-inner"></div>
+                        </div>
+                    );
+                })}
             </div>
             <div className="grid-border grid-border-top"></div>
             <div className="grid-border grid-border-right"></div>

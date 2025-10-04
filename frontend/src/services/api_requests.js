@@ -51,9 +51,8 @@ export const apiRequests = {
     },
 
 
-    sendHumanMove: (agentName, move) => {
+    sendHumanMove: (move) => {
         const params = new URLSearchParams({
-            agent_name: agentName,
             move: move,
         });
         
@@ -64,6 +63,18 @@ export const apiRequests = {
                 }
                 return res.json();
             });
+    },
+
+
+    getHumanStats: () => {
+        return fetch(`http://localhost:54322/api/human_get_stats`)
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error("Error starting the game")
+                }
+                return res.json();
+            });     
     }
+
 
 };

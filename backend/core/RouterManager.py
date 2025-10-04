@@ -140,8 +140,8 @@ class RouterManager:
 
                 game_state = self.snake_engins['Human'].game_state()
 
-#                if game_state['status'] == 'end':
-
+                if game_state['status'] == 'end':
+                    self.db_manager.save_game_results('Human', game_state)
 
                 await self.ws_manager.update_current_game("Human", game_state)
                 return JSONResponse(content={"status": "ok"})
@@ -152,5 +152,16 @@ class RouterManager:
                 raise HTTPException(status_code=500, detail=str(error))
 
 
-#        @self.router.get("/api/human_send_move")
-#        async def human_send_move(move):
+
+        @self.router.get("/api/human_get_stats")
+        async def human_get_stats():
+            try:    
+                scores_stats, details_stats = self.db_manager.get_stats('Human')
+                
+                await self.ws_manager.send_stats('Human', scores_stats, details_stats, None)
+                return JSONResponse(content={"status": "ok"})
+
+
+            except Exception as error:
+                print(f"api/human_get_stats ===> ERROR: {str(error)}", flush=True)
+                raise HTTPException(status_code=500, detail=str(error))

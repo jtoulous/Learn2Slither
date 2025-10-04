@@ -47,7 +47,7 @@ function PlayTab() {
                     return;
             }
 
-            apiRequests.sendHumanMove(currentAgent, move)
+            apiRequests.sendHumanMove(move)
                 .then(response => console.log("Move sent:", move))
                 .catch(err => console.error("Move error:", err));
 

@@ -1,6 +1,6 @@
 import React from "react"
 
-import logo from "../assets/suez_logo.png" 
+import logo from "../assets/logo_42.png" 
 import "./TopBar.css"
 
 

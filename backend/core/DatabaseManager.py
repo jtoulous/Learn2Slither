@@ -122,40 +122,25 @@ class DatabaseManager:
         query_2 = f'''
             CREATE TABLE IF NOT EXISTS {historical_games_table} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                datetime TEXT,
+                n_cells INTEGER,
                 score INTEGER,
-                nb_green INTEGER,
-                nb_red INTEGER,
+                green_score INTEGER,
+                red_score INTEGER,
                 nb_moves INTEGER
             )
         '''
 
-#        query_3 = f'''
-#            CREATE TABLE IF NOT EXISTS {current_game_table} (
-#                id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
-#                status TEXT,
-#                n_cells INTEGER,
-#                snake_head TEXT,
-#                snake_body TEXT,
-#                green_apples TEXT,
-#                red_apple TEXT,
-#                score INTEGER,
-#                green_score,
-#                red_score
-#            )
-#        '''
-
         if agent_name != 'Human':
-            query_4 = f'''
+            query_3 = f'''
                 CREATE TABLE IF NOT EXISTS {current_session_table} (
                     id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
                     nb_games INTEGER
                 )
             '''
-            self.execute_queries([query_1, query_2, query_4])# query_3, query_4])
+            self.execute_queries([query_1, query_2, query_3])
         
         else:
-            self.execute_queries([query_1, query_2])#, query_3])
+            self.execute_queries([query_1, query_2])
 
         self.agents_list.append(agent_name)
 
@@ -176,19 +161,31 @@ class DatabaseManager:
         return os.path.join(self.DB_REPO, agent_name_escaped, f'{agent_name_escaped}.pkl')
 
     
-    def update_current_game(self, agent_name, game_state):
-        agent_name_tbl= self.table_name(agent_name)
-        current_game_table = self.table_name(f'{agent_name_tbl}_current_game')
+#    def update_current_game(self, agent_name, game_state):
+#        agent_name_tbl= self.table_name(agent_name)
+#        current_game_table = self.table_name(f'{agent_name_tbl}_current_game')
+#
+#        snake_head_str = json.dumps(game_state['snake_head'])
+#        snake_body_str = json.dumps(game_state['snake_body'])
+#        green_apples_str = json.dumps(game_state['green_apples'])
+#        red_apple_str = json.dumps(game_state['red_apple'])
+#
+#        query = f'''
+#            REPLACE INTO {current_game_table} 
+#            (id, status, n_cells, snake_head, snake_body, green_apples, red_apple, score, green_score, red_score)
+#            VALUES (1, '{game_state['status']}', {game_state['n_cells']}, '{snake_head_str}', '{snake_body_str}', '{green_apples_str}', '{red_apple_str}', {game_state['score']}, {game_state['green_score']}, {game_state['red_score']})
+#        '''
+#
+#        self.execute_query(query)
 
-        snake_head_str = json.dumps(game_state['snake_head'])
-        snake_body_str = json.dumps(game_state['snake_body'])
-        green_apples_str = json.dumps(game_state['green_apples'])
-        red_apple_str = json.dumps(game_state['red_apple'])
+    
+    def save_game_results(self, agent_name, game_state):
+        agent_name_escaped = self.table_name(agent_name)
+        historical_games_table = f'{agent_name_escaped}_games_history'
 
         query = f'''
-            REPLACE INTO {current_game_table} 
-            (id, status, n_cells, snake_head, snake_body, green_apples, red_apple, score, green_score, red_score)
-            VALUES (1, '{game_state['status']}', {game_state['n_cells']}, '{snake_head_str}', '{snake_body_str}', '{green_apples_str}', '{red_apple_str}', {game_state['score']}, {game_state['green_score']}, {game_state['red_score']})
+            INSERT INTO {historical_games_table} (n_cells, score, green_score, red_score, nb_moves)
+            VALUES ({game_state['n_cells']}, {game_state['score']}, {game_state['green_score']}, {game_state['red_score']}, {game_state['nb_moves']})
         '''
-
+        
         self.execute_query(query)

@@ -252,3 +252,57 @@
         0 0 20px rgba(255, 127, 50, 0.15);
 }
 
+
+/* Cases visibles */
+.grid-cell.line-of-sight .cell-inner {
+    background: linear-gradient(
+        135deg,
+        rgba(60, 60, 80, 1) 0%,
+        rgba(40, 40, 60, 1) 100%
+    );
+    box-shadow: inset 0 0 8px rgba(0, 200, 255, 0.4),
+                0 0 15px rgba(0, 200, 255, 0.2);
+    filter: brightness(1.2);
+}
+
+/* Cases non visibles */
+.grid-cell.not-visible .cell-inner {
+    background: linear-gradient(
+        135deg,
+        rgba(15, 15, 20, 0.7) 0%,
+        rgba(10, 10, 15, 0.7) 100%
+    );
+    filter: brightness(0.4) contrast(0.8);
+}
+
+@keyframes sightGlow {
+    0%, 100% { box-shadow: inset 0 0 8px rgba(0, 200, 255, 0.3); }
+    50% { box-shadow: inset 0 0 14px rgba(0, 255, 255, 0.6); }
+}
+
+.grid-cell.line-of-sight .cell-inner {
+    animation: sightGlow 2s infinite ease-in-out;
+}
+
+
+/* === Fog of War avec blur doux === */
+.grid-cell.not-visible .cell-inner {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Overlay flou par-dessus la case */
+.grid-cell.not-visible .cell-inner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(6px) brightness(0.6);
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+/* On masque les pseudos des pommes/snake */
+.grid-cell.not-visible::after,
+.grid-cell.not-visible::before {
+    display: none !important;
+}

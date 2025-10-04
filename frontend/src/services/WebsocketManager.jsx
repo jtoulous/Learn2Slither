@@ -34,10 +34,10 @@ function WebsocketManager() {
                         stateRef.current.setCurrentGame(data.payload.game_state);
                     }
                     break;
+
             }
         };
 
-        // ... reste du code WebSocket
     }, []);
 
     return null;

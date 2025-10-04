@@ -23,18 +23,14 @@ export function State({ children }) {
     
     //PlayTab
     const [newGameSetting, setNewGameSettings] = useState({gridSize: 10, exploratoryRatio: 0.05});
-    const [currentGame, setCurrentGame] = useState({
-        status: "inactive", 
-        n_cells: 10, 
-        snake_head: [], 
-        snake_body: [], 
-        green_apples: [],
-        red_apples: [],
-        score: 0,
-        green_score: 0,
-        red_score: 0
-    })
+    const [currentGame, setCurrentGame] = useState({status: "inactive", n_cells: 10, snake_head: [], snake_body: [], green_apples: [],red_apples: [],score: 0,green_score: 0,red_score: 0})
     
+    //Stats
+    const [scoresStats, setScoreStats] = useState({})
+    const [detailsStats, setDetailsStats] = useState({})
+
+
+
     useEffect(() => {
         apiRequests.getAgentsList()
         .then(data => setAgentsList(data))

@@ -8,9 +8,10 @@ class SnakeEngin:
 
         self.status = 'inactive'
         self.prev_move = None
-        self.score = 0
+        self.score = 3
         self.green_score = 0
         self.red_score = 0
+        self.nb_moves = 0
 
 
     def new_game(self, n_cells=10):
@@ -19,9 +20,10 @@ class SnakeEngin:
 
         self.status = 'active'
         self.prev_move = prev_move
-        self.score = 0
+        self.score = 3
         self.green_score = 0
         self.red_score = 0
+        self.nb_moves = 0
 
 
 
@@ -50,6 +52,7 @@ class SnakeEngin:
         game_state['score'] = self.score
         game_state['green_score'] = self.green_score
         game_state['red_score'] = self.red_score
+        game_state['nb_moves'] = self.nb_moves
 
         return game_state
 
@@ -81,22 +84,22 @@ class SnakeEngin:
 
         if cell == 'W' or cell == 'S':
             self.status = 'end'
-            return
                 
         elif cell == 'G':
             self.map.move_snake(nxt_x_head, nxt_y_head)
             self.green_score += 1
-            self.score = self.green_score - self.red_score
+            self.score += 1
 
         elif cell == 'R':
             self.map.move_snake(nxt_x_head, nxt_y_head)
             self.red_score += 1
-            self.score = self.green_score - self.red_score
+            self.score -= 1
 
         else:
             self.map.move_snake(nxt_x_head, nxt_y_head)
 
         self.prev_move = move
+        self.nb_moves += 1
 
 
 
