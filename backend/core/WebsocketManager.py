@@ -64,3 +64,13 @@ class WebsocketManager:
                 "game_state": game_state
             }
         })
+
+
+    async def update_current_training(self, agent_name, training_state):
+        await self.broadcast({
+            "type": "current_training_update",
+            "payload": {
+                "agent_name": agent_name,
+                "training_state": training_state
+            }
+        })

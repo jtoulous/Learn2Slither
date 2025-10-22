@@ -29,9 +29,14 @@ function WebsocketManager() {
                     break;
 
                 case 'current_game_update':
-                    // ✅ Direct dans la ref, toujours à jour
                     if (stateRef.current.currentAgent === data.payload.agent_name) {
                         stateRef.current.setCurrentGame(data.payload.game_state);
+                    }
+                    break;
+
+                case 'current_training_update':
+                    if (stateRef.current.currentAgent === data.payload.agent_name) {
+                        stateRef.current.setCurrentTraining(data.payload.training_state);
                     }
                     break;
 

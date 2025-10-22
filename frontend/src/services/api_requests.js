@@ -21,11 +21,11 @@ export const apiRequests = {
             });
     },
 
-    startHumanGame: (gridSize) => {
+    newHumanGame: (gridSize) => {
         const params = new URLSearchParams({
             grid_size: gridSize
         });
-        return fetch(`http://localhost:54322/api/human_start_game?${params.toString()}`)
+        return fetch(`http://localhost:54322/api/human_new_game?${params.toString()}`)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error("Error starting the game")
@@ -35,13 +35,13 @@ export const apiRequests = {
     },
 
 
-    startAgentGame: (agentName, gridSize, exploratoryRatio) => {
+    newAgentGame: (agentName, gridSize, exploratoryRatio) => {
         const params = new URLSearchParams({
             agent_name: agentName,
             grid_size: gridSize,
             exploratory_ratio: exploratoryRatio
         });
-        return fetch(`http://localhost:54322/api/ai_start_game?${params.toString()}`)
+        return fetch(`http://localhost:54322/api/agent_new_game?${params.toString()}`)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error("Error starting the game")

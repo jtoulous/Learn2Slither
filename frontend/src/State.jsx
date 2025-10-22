@@ -11,7 +11,6 @@ export function State({ children }) {
     const [showLeftBar, setShowLeftBar] = useState(false)
     
     // Home.jsx
-    const [showNewAgentForm, setShowNewAgentForm] = useState(false)
     const [newAgent, setNewAgent] = useState({name: "", description: ""})
     
     // Agent.jsx
@@ -19,10 +18,9 @@ export function State({ children }) {
     const [currentTab, setCurrentTab] = useState("play")
     
     // TrainingTab.jsx
-    const [trainingParams, setTrainingParams] = useState({sessions: 1000, epsilonDecay: "linear", visuals: false, speed: 1.0});
-    
+    const [currentTraining, setCurrentTraining] = useState(null)
+
     //PlayTab
-    const [newGameSetting, setNewGameSettings] = useState({gridSize: 10, exploratoryRatio: 0.05});
     const [currentGame, setCurrentGame] = useState({status: "inactive", n_cells: 10, snake_head: [], snake_body: [], green_apples: [],red_apples: [],score: 0,green_score: 0,red_score: 0})
     
     //Stats
@@ -42,13 +40,11 @@ export function State({ children }) {
             window._globalState = {
                 agentsList, setAgentsList,
                 showLeftBar, setShowLeftBar,
-                showNewAgentForm, setShowNewAgentForm,
                 newAgent, setNewAgent,
                 currentAgent, setCurrentAgent,
                 currentTab, setCurrentTab,
-                trainingParams, setTrainingParams,
-                newGameSetting, setNewGameSettings,
-                currentGame, setCurrentGame
+                currentGame, setCurrentGame,
+                currentTraining, setCurrentTraining
             };
         }
     });
@@ -59,13 +55,11 @@ export function State({ children }) {
         <StateContext.Provider value={{
             agentsList, setAgentsList,
             showLeftBar, setShowLeftBar,
-            showNewAgentForm, setShowNewAgentForm,
             newAgent, setNewAgent,
             currentAgent, setCurrentAgent,
             currentTab, setCurrentTab,
-            trainingParams, setTrainingParams,
-            newGameSetting, setNewGameSettings,
-            currentGame, setCurrentGame
+            currentGame, setCurrentGame,
+            currentTraining, setCurrentTraining
         }}>
             {children}
         </StateContext.Provider>

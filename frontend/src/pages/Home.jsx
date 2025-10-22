@@ -12,9 +12,10 @@ function Home() {
     const {
         currentAgent, setCurrentAgent,
         agentsList, setAgentsList,
-        showNewAgentForm, setShowNewAgentForm,
         newAgent, setNewAgent
     } = GlobalState()
+
+    const [showNewAgentForm, setShowNewAgentForm] = useState(false)
 
     const navigate = useNavigate();
 

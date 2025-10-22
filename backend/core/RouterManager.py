@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 
 from .fonctionnalities.SnakeEngin import SnakeEngin
-#from fonctionnalities.Agent import Agent 
+from .fonctionnalities.Agent import Agent 
 
 
 
@@ -16,9 +16,17 @@ class RouterManager:
         self.ws_manager = ws_manager
         self.router = APIRouter()
 
-        self.snake_engins = {}
-
         self.routes()
+        
+        self.snake_engins = {}
+        self.agents = {}
+
+        agents_list = self.db_manager.get_agents_list()
+
+        for agent in agents_list:
+            self.snake_engins[agent] = SnakeEngin()
+#            if agent != 'Human':
+#                self.agents[agent] = Agent.load(self.db_manager.get_agent_file(agent))
 
 
     def routes(self):
@@ -55,14 +63,13 @@ class RouterManager:
                     raise HTTPException(status_code=400, detail="Agent name already taken")
 
                 self.db_manager.new_agent(name, description)
+                self.snake_engins[name] = SnakeEngin()
 
                 updated_agents_list = self.db_manager.get_agents_list()
                 await self.ws_manager.update_agents_list(updated_agents_list)
 
                 #if name != 'Human':
                     # ADD INSTANCIATION DE L AGENT
-
-                self.snake_engins[name] = None
 
                 return JSONResponse(content={"status": "ok"})
 
@@ -73,62 +80,19 @@ class RouterManager:
 
         
 
-#        @self.router.get("/api/new_training")
-#        async def new_training(agent_name, sessions, epsilon_init, epsilon_decay, visuals, speed=1):
-#            try:
-#                agent_save_file = db_manager.get_agent_file(agent_name)
-#
-#                snake_engin = SnakeEngin()
-#                agent = Agent.load(agent_save_file)
-#
-#                agent.new_training(sessions, epsilon_init, epsilon_decay)
-#
-#                for i in range(sessions):
-#                    snake_engin.new_game()
-#                    agent.new_game()
-#
-#                    self.ws_manager.update_running_game(snake_engin.game_data())
-#
-#                    while game_engin.status == 'active':
-#                        game_data = snake_engin.game_data()
-#
-#                        agent.update_q_table(game_data)
-#                        next_move = agent.get_next_move(game_data)
-#
-#                        snake_engin.apply_move(next_move)
-#                        self.ws_manager.update_running_game(snake_engin.game_data())
-#
-#                        if visuals is True:
-#                            time.sleep(speed)
-#
-#
-#
-#                return JSONResponse(content={"status": "ok"})
-#
-#
-#            except Exception as error:
-#                print(f"api/new_training ===> ERROR: {str(error)}", flush=True)
-#                raise HTTPException(status_code=500, detail=str(error))
-#
-
-        
-
-        ###  ICI
-        @self.router.get("/api/human_start_game")
-        async def human_start_game(grid_size: int):
+        @self.router.get("/api/human_new_game")
+        async def human_new_game(grid_size: int):
             try:    
-                self.snake_engins['Human'] = SnakeEngin()
                 self.snake_engins['Human'].new_game(grid_size)
 
                 game_state = self.snake_engins['Human'].game_state()
                 
-#                self.db_manager.update_current_game('Human', game_state)
                 await self.ws_manager.update_current_game("Human", game_state)
 
                 return JSONResponse(content={"status": "ok"})
 
             except Exception as error:
-                print(f"api/human_start_game ===> ERROR: {str(error)}", flush=True)
+                print(f"api/human_new_game ===> ERROR: {str(error)}", flush=True)
                 raise HTTPException(status_code=500, detail=str(error))
 
 
@@ -165,3 +129,61 @@ class RouterManager:
             except Exception as error:
                 print(f"api/human_get_stats ===> ERROR: {str(error)}", flush=True)
                 raise HTTPException(status_code=500, detail=str(error))
+
+
+        @self.router.get("/api/agent_new_game")
+        async def agent_new_game(agent_name, grid_size, exploratory_ratio):
+            try:
+                self.snake_engins[agent_name] = SnakeEngin()
+                self.snake_engins[agent_name].new_game(grid_size)
+
+                game_state = self.snake_engins[agent_name].game_state()
+                
+                await self.ws_manager.update_current_game(agent_name, game_state)
+
+                return JSONResponse(content={"status": "ok"})
+                
+            except Exception as error:
+                print(f"api/agent_new_game ===> ERROR: {str(error)}", flush=True)
+                raise HTTPException(status_code=500, detail=str(error))
+
+
+
+        @self.router.get("/api/agent_new_training")
+        async def agent_start_training(agent_name, nb_sessions, epsilon_decay):
+            try:
+                self.ongoing_trainings[agent_name] = TrainingCycle(self.db_manager, self.agents[agent_name], self.snake_engins[agent_name], nb_sessions, epsilon_decay)
+                
+                self.ws_manager.update_current_training(agent_name, self.ongoing_trainings[agent_name].training_state())
+
+
+            except Exception as error:
+                print(f"api/agent_new_training ===> ERROR: {str(error)}", flush=True)
+                raise HTTPException(status_code=500, detail=str(error))
+
+
+
+
+#        @self.router.get("api/agent_continue_training")
+#        async def agent_continue_training(agent_name):
+#            try:    
+#                training_cycle = self.ongoing_trainings[agent_name]
+#                training_cycle.nxt_move()
+#
+#                self.ws_manager.update_current_training(agent_name, training_cycle.training_state())
+#
+#                if training_cycle.status == 'done':
+#                    del self.ongoing_trainings[agent_name]
+#
+#
+#            except Exception as error:
+#                print(f"api/agent_nxt_move ===> ERROR: {str(error)}", flush=True)
+#                raise HTTPException(status_code=500, detail=str(error))\
+
+
+#        @self.router.get("api/agent_nxt_move_game")
+#        async def agent_nxt_move_game(agent_name):
+#            try:    
+#            except Exception as error:
+#                print(f"api/agent_nxt_move ===> ERROR: {str(error)}", flush=True)
+#                raise HTTPException(status_code=500, detail=str(error))\

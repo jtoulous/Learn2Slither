@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { GlobalState } from '../State.jsx';
 import { apiRequests } from '../services/api_requests.js';
 import GameGrid from '../components/GameGrid.jsx';
@@ -9,8 +9,9 @@ function PlayTab() {
     const {
         currentAgent,
         currentGame, setCurrentGame,
-        newGameSetting, setNewGameSettings,
     } = GlobalState();
+
+    const [newGameSetting, setNewGameSettings] = useState({gridSize: 10, exploratoryRatio: 0.05});
 
     const isHumanAgent = currentAgent === 'Human';
 
@@ -67,12 +68,12 @@ function PlayTab() {
         console.log("Lancement de la partie:", { agent: currentAgent, ...newGameSetting });
         
         if (isHumanAgent) {
-            apiRequests.startHumanGame(newGameSetting.gridSize)
+            apiRequests.newHumanGame(newGameSetting.gridSize)
                 .then(response => console.log("Game started for human:", response))
                 .catch(err => console.error(err));
         } 
         else {
-            apiRequests.startAIGame(currentAgent, newGameSetting.gridSize, newGameSetting.exploratoryRatio)
+            apiRequests.newAgentGame(currentAgent, newGameSetting.gridSize, newGameSetting.exploratoryRatio)
                 .then(response => console.log("Game started for AI:", response))
                 .catch(err => console.error(err));
         }
