@@ -48,7 +48,7 @@ class Agent:
 
 
 class QModel:
-    def __init__(self, input_size, output_size, learning_rate, gamma):
+    def __init__(self, input_size=17, output_size=4, learning_rate=0.01, gamma=0.99):
         self.learning_rate = learning_rate
 
         self.model = torch.nn.Sequential(
@@ -95,7 +95,7 @@ class QModel:
 
 
 class TrainingCycle:
-    def __init__(self, db_manager, agent, game_engin, nb_sessions, epsilon_decay_strat, epsilon_init=1, epsilon_min=0.01, epsilon_decay_rate=0.995, epsilon_decay_k=0.01, epsilon_decay_power=2):
+    def __init__(self, db_manager, agent, game_engin, training_params):
         self.status = 'running'
 
         self.cycle_group = f'cycle_{self.db_manager.get_nb_cycles(agent_name) + 1}'
@@ -104,21 +104,24 @@ class TrainingCycle:
         self.agent = agent
         self.game_engin = game_engin
 
-        self.nb_sessions = nb_sessions
-        self.epsilon_decay_strat = epsilon_decay_strat
+        self.nb_sessions = training_params["nb_sessions"]
+        self.epsilon_decay_strat = training_params["epsilon_decay_strat"]
+        self.epsilon_init = training_params["epsilon_init"]
+        self.epsilon_min = training_params["epsilon_min"]
+        self.epsilon_decay_rate = training_params["epsilon_decay_rate"]
+        self.epsilon_decay_k = training_params["epsilon_decay_k"]
+        self.epsilon_decay_power = training_params["epsilon_decay_power"]
 
         self.current_session = 0
         self.current_epsilon = epsilon_init
-        self.epsilon_init = epsilon_init
-
-        self.cycle_stats = []
+        self.cycles_stats = []
 
         self.game_engin.new_game()
 
 
 
     def training_state(self):
-        state = {'status': self.status, 'current_session': self.game_engin.game_state(), 'training_cycle_stats': self.cycle_stats, 'epsilon': self.current_epsilon}
+        state = {'status': self.status, 'current_session': self.game_engin.game_state(), 'training_cycle_stats': self.cycles_stats, 'epsilon': self.current_epsilon}
         return state
 
 
@@ -130,7 +133,8 @@ class TrainingCycle:
             moves_scores = Interpreter.compute_scores(model_state, move)
 
         chosen_move, chosen_score, nxt_state = self.agent.choose_move(moves_scores, epsilon=self.current_epsilon)
-        
+        self.game_engin.execute_move(chosen_move)
+
         nxt_model_state = Interpreter.compute_model_state(nxt_state)
 
         if self.game_engin.status == 'end':
@@ -138,10 +142,10 @@ class TrainingCycle:
         else:
             agent.model.train(model_state, chosen_move, chosen_score, nxt_model_state, done=True)
 
-
+    
         
         if self.game_engin.status == 'end':
-            self.cycle_stats.append(self.game_engin.game_state())
+            self.cycles_stats.append(self.game_engin.game_state())
             self.db_manager.save_game_results(self.cycle_idx, self.agent.name, self.game_engin.game_state())
 
             if self.current_session < self.nb_sessions:
@@ -176,10 +180,42 @@ class TrainingCycle:
 
 
 class Interpreter:
+
+
+
+    model_state = [
+        "distance_first_obj_left",
+        "distance_second_obj_left",
+        "type_first_obj_left",
+        "type_second_obj_left",
+
+        "distance_first_obj_right",
+        "distance_second_obj_right",
+        "type_first_obj_right",
+        "type_second_obj_right",
+        
+        "distance_first_obj_up",
+        "distance_second_obj_up",
+        "type_first_obj_up",
+        "type_second_obj_up",
+        
+        "distance_first_obj_down",
+        "distance_second_obj_down",
+        "type_first_obj_down",
+        "type_second_obj_down",
+
+        "latest_global_direction",
+    ]
+
+
+
     @staticmethod
     def compute_model_state(game_state):
         model_state = None
+
+
         return state
+
 
     @staticmethod
     def compute_scores(game_engin, move):

@@ -10,11 +10,13 @@ class DatabaseManager:
     def __init__(self, db_repo, agents_info_tbl='agents_info'):
         self.DB_REPO = db_repo
         self.DB_FILE = os.path.join(self.DB_REPO, 'database.db')
+        self.AGENTS_FILES = os.path.join(self.DB_REPO, 'agents')
         self.AGENTS_TBL = agents_info_tbl
 
         self.agents_list = []
 
         os.makedirs(db_repo, exist_ok=True)
+        os.makedirs(self.AGENTS_FILES, exist_ok=True)
 
         query_1 = f'''
             CREATE TABLE IF NOT EXISTS {self.AGENTS_TBL} (
@@ -113,7 +115,7 @@ class DatabaseManager:
 
     def get_agent_file(self, agent_name):
         agent_name_escaped = self.escape_sql(agent_name)
-        return os.path.join(self.DB_REPO, agent_name_escaped, f'{agent_name_escaped}.pkl')
+        return os.path.join(self.AGENTS_FILES, f'{agent_name_escaped}.pkl')
 
 
 #    def get_nb_cycles(self, agent_name):
@@ -124,8 +126,8 @@ class DatabaseManager:
         agent_name_tbl= self.escape_sql(agent_name)
         description_tbl = self.escape_sql(description)
         
-        new_agent_repo = os.path.join(self.DB_REPO, agent_name_tbl)
-        os.makedirs(new_agent_repo, exist_ok=True)
+        #new_agent_repo = os.path.join(self.DB_REPO, agent_name_tbl)
+        #os.makedirs(new_agent_repo, exist_ok=True)
 
         historical_games_table = self.escape_sql(f'{agent_name_tbl}_games_history')
         current_game_table = self.escape_sql(f'{agent_name_tbl}_current_game')

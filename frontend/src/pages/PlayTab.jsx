@@ -33,16 +33,16 @@ function PlayTab() {
             let move;
             switch(e.key) {
                 case 'ArrowUp':
-                    move = 'up';
+                    move = 0;
                     break;
                 case 'ArrowDown':
-                    move = 'down';
+                    move = 1;
                     break;
                 case 'ArrowLeft':
-                    move = 'left';
+                    move = 2;
                     break;
                 case 'ArrowRight':
-                    move = 'right';
+                    move = 3;
                     break;
                 default:
                     return;

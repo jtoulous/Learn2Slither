@@ -18,3 +18,4 @@ typing_extensions
 tzdata
 uvicorn
 torch
+python-multipart

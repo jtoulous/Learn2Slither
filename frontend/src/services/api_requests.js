@@ -74,7 +74,51 @@ export const apiRequests = {
                 }
                 return res.json();
             });     
-    }
+    },
 
+
+    agentNewTraining: (currentAgent, trainingParams) => {
+        const formData = new FormData();
+
+        formData.append("agent_name", currentAgent.name)
+        formData.append("nb_sessions", trainingParams.sessions)
+        formData.append("epsilon_decay_strat", trainingParams.epsilonDecayStrat)
+        formData.append("epsilon_init", trainingParams.epsilonInit)
+        formData.append("epsilon_min", trainingParams.epsilonMin)
+        formData.append("epsilon_decay_rate", trainingParams.epsilonDecayRate)
+        formData.append("epsilon_decay_k", trainingParams.epsilonDecayK)
+        formData.append("epsilon_decay_power", trainingParams.epsilonDecayPower)
+
+        
+        return fetch(`http://localhost:54322/api/agent_new_training`, {
+            method: "POST",
+            body: formData
+        })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error("Error starting new training")
+            }
+            return res.json();
+        })
+    },
+
+    
+    agentContinueTraining: (currentAgent, toggleVisuals) => {
+        const formData = new FormData();
+
+        formData.append("agent_name", currentAgent.name)
+        formData.append("visuals", toggleVisuals)
+        
+        return fetch(`http://localhost:54322/api/agent_continue_training`, {
+            method: "POST",
+            body: formData
+        })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error("Error starting continuing training")
+            }
+            return res.json();
+        })
+    }
 
 };

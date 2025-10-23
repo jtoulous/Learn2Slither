@@ -2,11 +2,11 @@ import os
 import json
 import time
 
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, Form
 from fastapi.responses import JSONResponse
 
 from .fonctionnalities.SnakeEngin import SnakeEngin
-from .fonctionnalities.Agent import Agent 
+from .fonctionnalities.Agent import Agent, TrainingCycle
 
 
 
@@ -20,13 +20,14 @@ class RouterManager:
         
         self.snake_engins = {}
         self.agents = {}
+        self.ongoing_trainings = {}
 
         agents_list = self.db_manager.get_agents_list()
 
-        for agent in agents_list:
-            self.snake_engins[agent] = SnakeEngin()
-#            if agent != 'Human':
-#                self.agents[agent] = Agent.load(self.db_manager.get_agent_file(agent))
+        for agent_name in agents_list:
+            self.snake_engins[agent_name] = SnakeEngin()
+#            if agent_name != 'Human':
+#                self.agents[agent_name] = Agent.load(self.db_manager.get_agent_file(agent_name))
 
 
     def routes(self):
@@ -65,11 +66,12 @@ class RouterManager:
                 self.db_manager.new_agent(name, description)
                 self.snake_engins[name] = SnakeEngin()
 
+                if name != 'Human':
+                    self.agents[name] = Agent(name)
+                    self.agents[name].save(self.db_manager.get_agent_file(name))
+                
                 updated_agents_list = self.db_manager.get_agents_list()
                 await self.ws_manager.update_agents_list(updated_agents_list)
-
-                #if name != 'Human':
-                    # ADD INSTANCIATION DE L AGENT
 
                 return JSONResponse(content={"status": "ok"})
 
@@ -86,6 +88,7 @@ class RouterManager:
                 self.snake_engins['Human'].new_game(grid_size)
 
                 game_state = self.snake_engins['Human'].game_state()
+                print (f'{game_state}\n', flush=True)
                 
                 await self.ws_manager.update_current_game("Human", game_state)
 
@@ -98,11 +101,12 @@ class RouterManager:
 
 
         @self.router.get("/api/human_send_move")
-        async def human_send_move(move):
+        async def human_send_move(move: int):
             try:    
                 self.snake_engins['Human'].execute_move(move)
 
                 game_state = self.snake_engins['Human'].game_state()
+                print (f'{game_state}\n', flush=True)
 
                 if game_state['status'] == 'end':
                     self.db_manager.save_game_results('Human', game_state)
@@ -149,10 +153,31 @@ class RouterManager:
 
 
 
-        @self.router.get("/api/agent_new_training")
-        async def agent_start_training(agent_name, nb_sessions, epsilon_decay):
+        @self.router.post("/api/agent_new_training")
+        async def agent_start_training(
+            agent_name: str = Form(...), 
+            nb_sessions: int = Form(...), 
+            epsilon_decay_strat: str = Form(...),
+            epsilon_init: float = Form(...),
+            epsilon_min: float = Form(...),
+            epsilon_decay_rate: float = Form(...),
+            epsilon_decay_k: float = Form(...),
+            epsilon_decay_power: float = Form(...)
+        ):
             try:
-                self.ongoing_trainings[agent_name] = TrainingCycle(self.db_manager, self.agents[agent_name], self.snake_engins[agent_name], nb_sessions, epsilon_decay)
+                training_params = {
+                    'nb_sessions': nb_sessions,
+                    'epsilon_decay_strat': epsilon_decay_strat,
+                    'epsilon_init': epsilon_init,
+                    'epsilon_min': epsilon_min,
+                    'epsilon_decay_rate': epsilon_decay_rate,
+                    'epsilon_decay_k': epsilon_decay_k,
+                    'epsilon_decay_power': epsilon_decay_power
+                }
+
+                print(f'{training_params}', flush=True)
+
+                self.ongoing_trainings[agent_name] = TrainingCycle(self.db_manager, self.agents[agent_name], self.snake_engins[agent_name], training_params)
                 
                 self.ws_manager.update_current_training(agent_name, self.ongoing_trainings[agent_name].training_state())
 
@@ -164,21 +189,21 @@ class RouterManager:
 
 
 
-#        @self.router.get("api/agent_continue_training")
-#        async def agent_continue_training(agent_name):
-#            try:    
-#                training_cycle = self.ongoing_trainings[agent_name]
-#                training_cycle.nxt_move()
-#
-#                self.ws_manager.update_current_training(agent_name, training_cycle.training_state())
-#
-#                if training_cycle.status == 'done':
-#                    del self.ongoing_trainings[agent_name]
-#
-#
-#            except Exception as error:
-#                print(f"api/agent_nxt_move ===> ERROR: {str(error)}", flush=True)
-#                raise HTTPException(status_code=500, detail=str(error))\
+        @self.router.post("/api/agent_continue_training")
+        async def agent_continue_training(agent_name, visuals):
+            try:    
+                training_cycle = self.ongoing_trainings[agent_name]
+                training_cycle.nxt_move()
+
+                self.ws_manager.update_current_training(agent_name, training_cycle.training_state())
+
+                if training_cycle.status == 'done':
+                    del self.ongoing_trainings[agent_name]
+
+
+            except Exception as error:
+                print(f"api/agent_nxt_move ===> ERROR: {str(error)}", flush=True)
+                raise HTTPException(status_code=500, detail=str(error))\
 
 
 #        @self.router.get("api/agent_nxt_move_game")

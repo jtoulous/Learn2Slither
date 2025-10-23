@@ -67,18 +67,18 @@ class SnakeEngin:
 
 
     def execute_move(self, move):
-        if (move == 'up' and self.prev_move == 'down') or \
-           (move == 'down' and self.prev_move == 'up') or \
-           (move == 'left' and self.prev_move == 'right') or \
-           (move == 'right' and self.prev_move == 'left'):
+        if (move == 0 and self.prev_move == 1) or \
+           (move == 1 and self.prev_move == 0) or \
+           (move == 2 and self.prev_move == 3) or \
+           (move == 3 and self.prev_move == 2):
             return
         
         grid = self.map.grid
         x_head = self.map.snake_head[0]
         y_head = self.map.snake_head[1]
         
-        nxt_x_head = x_head - 1 if move == 'up' else x_head + 1 if move == 'down' else x_head 
-        nxt_y_head = y_head - 1 if move == 'left' else y_head + 1 if move == 'right' else y_head
+        nxt_x_head = x_head - 1 if move == 0 else x_head + 1 if move == 1 else x_head 
+        nxt_y_head = y_head - 1 if move == 2 else y_head + 1 if move == 3 else y_head
 
         cell = grid[nxt_x_head, nxt_y_head]
 
@@ -145,10 +145,10 @@ class Map:
         x_body, y_body = self.snake_body[0]
         
         prev_move = (
-            'up' if x_head == x_body - 1
-            else 'down' if x_head == x_body + 1
-            else 'left' if y_body == y_head + 1
-            else 'right' if y_body == y_head - 1
+            0 if x_head == x_body - 1
+            else 1 if x_head == x_body + 1
+            else 2 if y_body == y_head + 1
+            else 3 if y_body == y_head - 1
             else None
         )
         return prev_move
