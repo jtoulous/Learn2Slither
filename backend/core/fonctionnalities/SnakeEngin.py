@@ -1,13 +1,16 @@
 import random
 import numpy as np
 
+from collections import Counter
+
+
 
 class SnakeEngin:
     def __init__(self):
         self.map = None
 
         self.status = 'inactive'
-        self.prev_move = None
+        self.prev_moves = []
         self.score = 3
         self.green_score = 0
         self.red_score = 0
@@ -15,11 +18,12 @@ class SnakeEngin:
 
 
     def new_game(self, n_cells=10):
+        self.prev_moves = []
         self.map = Map(n_cells)
         prev_move = self.map.reset()
 
         self.status = 'active'
-        self.prev_move = prev_move
+        self.prev_moves.append(prev_move)
         self.score = 3
         self.green_score = 0
         self.red_score = 0
@@ -27,12 +31,11 @@ class SnakeEngin:
 
 
 
-    def get_snake_view(self, rtn='str'):
-        x_head = self.map.snake_head[0]
-        y_head = self.map.snake_head[1]
+    def get_snake_view(self, rtn='split'):
+        y_head, x_head = self.map.snake_head
 
-        horizontal_view = self.map.grid[x_head, :]
-        vertical_view = self.map.grid[:, y_head]
+        horizontal_view = self.map.grid[y_head, :]
+        vertical_view = self.map.grid[:, x_head]
 
         if rtn == 'str':
             combined_view = ''.join(horizontal_view) + ''.join(vertical_view)
@@ -40,6 +43,19 @@ class SnakeEngin:
         else:
             return horizontal_view, vertical_view
         
+
+    def get_prev_global_direction(self):
+        latest_moves = self.prev_moves[-5:]
+
+        if not latest_moves:
+            return -1
+
+        counter = Counter(latest_moves)
+
+        most_common_move, _ = counter.most_common(1)[0]
+        return most_common_move
+
+
 
     def game_state(self):
         game_state = {}
@@ -53,6 +69,11 @@ class SnakeEngin:
         game_state['green_score'] = self.green_score
         game_state['red_score'] = self.red_score
         game_state['nb_moves'] = self.nb_moves
+        
+        game_state['horizontal_view'], game_state['vertical_view'] = self.get_snake_view(rtn='split')
+        game_state['horizontal_view'] = game_state['horizontal_view'].tolist()
+        game_state['vertical_view'] = game_state['vertical_view'].tolist()
+        game_state['prev_global_direction'] = self.get_prev_global_direction()
 
         return game_state
 
@@ -67,38 +88,39 @@ class SnakeEngin:
 
 
     def execute_move(self, move):
-        if (move == 0 and self.prev_move == 1) or \
-           (move == 1 and self.prev_move == 0) or \
-           (move == 2 and self.prev_move == 3) or \
-           (move == 3 and self.prev_move == 2):
+        if (move == 0 and self.prev_moves[0] == 1) or \
+           (move == 1 and self.prev_moves[0] == 0) or \
+           (move == 2 and self.prev_moves[0] == 3) or \
+           (move == 3 and self.prev_moves[0] == 2):
             return
         
         grid = self.map.grid
-        x_head = self.map.snake_head[0]
-        y_head = self.map.snake_head[1]
+        y_head, x_head = self.map.snake_head
         
-        nxt_x_head = x_head - 1 if move == 0 else x_head + 1 if move == 1 else x_head 
-        nxt_y_head = y_head - 1 if move == 2 else y_head + 1 if move == 3 else y_head
+        nxt_y_head = y_head - 1 if move == 0 else y_head + 1 if move == 1 else y_head
+        nxt_x_head = x_head - 1 if move == 2 else x_head + 1 if move == 3 else x_head 
 
-        cell = grid[nxt_x_head, nxt_y_head]
+        print(f'\n\nx_head = {x_head} | y_head = {y_head}\nnxt_x_head = {nxt_x_head} | nxt_y_head = {nxt_y_head}\n\n', flush=True)
+
+        cell = grid[nxt_y_head, nxt_x_head]
 
         if cell == 'W' or cell == 'S':
             self.status = 'end'
                 
         elif cell == 'G':
-            self.map.move_snake(nxt_x_head, nxt_y_head)
+            self.map.move_snake(nxt_y_head, nxt_x_head)
             self.green_score += 1
             self.score += 1
 
         elif cell == 'R':
-            self.map.move_snake(nxt_x_head, nxt_y_head)
+            self.map.move_snake(nxt_y_head, nxt_x_head)
             self.red_score += 1
             self.score -= 1
 
         else:
-            self.map.move_snake(nxt_x_head, nxt_y_head)
+            self.map.move_snake(nxt_y_head, nxt_x_head)
 
-        self.prev_move = move
+        self.prev_moves.insert(0, move)
         self.nb_moves += 1
 
 
@@ -141,14 +163,14 @@ class Map:
         self.new_apple('G')
         self.new_apple('R')
 
-        x_head, y_head = self.snake_head
-        x_body, y_body = self.snake_body[0]
+        y_head, x_head = self.snake_head
+        y_body, x_body = self.snake_body[0]
         
         prev_move = (
-            0 if x_head == x_body - 1
-            else 1 if x_head == x_body + 1
-            else 2 if y_body == y_head + 1
-            else 3 if y_body == y_head - 1
+            0 if y_head == y_body - 1
+            else 1 if y_head == y_body + 1
+            else 2 if x_head == x_body - 1
+            else 3 if x_head == x_body + 1
             else None
         )
         return prev_move
@@ -169,16 +191,16 @@ class Map:
 
     def new_apple(self, apple_type):
         while True:
-            x = random.randint(1, self.n_cells)
             y = random.randint(1, self.n_cells)
+            x = random.randint(1, self.n_cells)
         
-            if self.grid[x, y] == '0':
-                self.grid[x, y] = apple_type
+            if self.grid[y, x] == '0':
+                self.grid[y, x] = apple_type
 
                 if apple_type == 'G':
-                    self.green_apples.append((x, y))
+                    self.green_apples.append((y, x))
                 else:
-                    self.red_apple = (x, y)
+                    self.red_apple = (y, x)
 
                 break
 
@@ -188,7 +210,7 @@ class Map:
         while snake_placed != True:
             x1 = random.randint(1, self.n_cells)
             y1 = random.randint(1, self.n_cells)
-            if self.grid[x1, y1] == '0':
+            if self.grid[y1, x1] == '0':
                 next_pos = random.randint(1, 4)
                 if next_pos == 1:
                     x2 = x1 - 1
@@ -206,7 +228,7 @@ class Map:
                     x2 = x1
                     y2 = y1 + 1
 
-                if self.grid[x2, y2] == '0':
+                if self.grid[y2, x2] == '0':
                     next_pos = random.randint(1, 4)
                     if next_pos == 1:
                         x3 = x2 - 1
@@ -224,17 +246,17 @@ class Map:
                         x3 = x2
                         y3 = y2 + 1
 
-                    if self.grid[x3, y3] == '0' and (x3 != x1 or y3 != y1):
-                        self.grid[x1, y1] = 'H' 
-                        self.grid[x2, y2] = 'S' 
-                        self.grid[x3, y3] = 'S'
+                    if self.grid[y3, x3] == '0' and (x3 != x1 or y3 != y1):
+                        self.grid[y1, x1] = 'H' 
+                        self.grid[y2, x2] = 'S' 
+                        self.grid[y3, x3] = 'S'
                         snake_placed = True
-        self.snake_head = (x1, y1)
-        self.snake_body = [(x2, y2), (x3, y3)]
+        self.snake_head = (y1, x1)
+        self.snake_body = [(y2, x2), (y3, x3)]
 
 
-    def move_snake(self, nxt_x_head, nxt_y_head):
-        nxt_head = (nxt_x_head, nxt_y_head)
+    def move_snake(self, nxt_y_head, nxt_x_head):
+        nxt_head = (nxt_y_head, nxt_x_head)
         nxt_cell = self.grid[nxt_head]
         head = self.snake_head
             

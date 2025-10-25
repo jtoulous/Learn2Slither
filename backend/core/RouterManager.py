@@ -106,10 +106,10 @@ class RouterManager:
                 self.snake_engins['Human'].execute_move(move)
 
                 game_state = self.snake_engins['Human'].game_state()
-                print (f'{game_state}\n', flush=True)
+                print (f'{self.snake_engins["Human"].map.grid}\nmove = {move}\nprev_move = {self.snake_engins["Human"].prev_moves[0]}', flush=True)
 
                 if game_state['status'] == 'end':
-                    self.db_manager.save_game_results('Human', game_state)
+                    self.db_manager.save_game_results('Regular', 'Human', game_state)
 
                 await self.ws_manager.update_current_game("Human", game_state)
                 return JSONResponse(content={"status": "ok"})
